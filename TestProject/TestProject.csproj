@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Jering.Javascript.NodeJS" Version="7.0.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
+		<PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
+		<PackageReference Include="coverlet.collector" Version="3.2.0" />
+		<PackageReference Include="Testcontainers" Version="2.4.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.14" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Resources\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Imsat.Bashmaky.Model\Imsat.Bashmaky.Model.csproj" />
+		<ProjectReference Include="..\Imsat.Bashmaky.Web\Imsat.Bashmaky.Web.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Resources\mqqtPatterns.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

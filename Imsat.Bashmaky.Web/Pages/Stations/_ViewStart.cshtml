@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "_Layout";
+}
+<div>
+    <h5>Станции</h5>
+    <ul class="nav nav-tabs">
+        @for (var i = 0; i < Model.Stations.Count; i++)
+        {
+            if (i + 1 == Model.StationId)
+            {
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" asp-page-handler="" asp-route-id="@Model.Stations[i].Id">@Model.Stations[i].Name</a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-page-handler="" asp-route-id="@Model.Stations[i].Id">@Model.Stations[i].Name</a>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+
+ <meta http-equiv="refresh" content="@Model.UpdateTimeSec;url = @Model.PageUrl" /> 

@@ -1,0 +1,51 @@
+﻿.custom-offcanvas {
+    width: 60%; 
+}
+.table-container {
+    max-height: 100px;
+    max-width: 80%;
+    /*position: absolute;*/
+    left: 0;
+    bottom: 10%;
+    line-height: 80%;
+    overflow-y: auto;
+    flex: 0 0 auto;
+}
+tr:hover {
+    color: blue;
+}
+
+.segment {
+    margin-bottom:30px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.select2-container--open {
+    display: block !important;
+}
+
+.input-group {
+    display: flex; /* Используем Flexbox для выравнивания */
+    align-items: center; 
+}
+
+.input-group span {
+        margin-right: 10px; 
+    }
+
+#titleId {
+    margin-right: 10px;
+}

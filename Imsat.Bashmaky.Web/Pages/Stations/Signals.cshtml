@@ -1,0 +1,35 @@
+﻿@page "/Signals/{id=1}"
+@using Imsat.Bashmaky.Model;
+@model Imsat.Bashmaky.Web.Pages.SignalsModel
+@{
+    ViewData["Title"] = "Сигналы";
+}
+
+<div>
+    <button type="button" class="btn btn-cta"><a asp-page="Index" asp-route-id="@Model.StationId">Назад</a></button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Время</th>
+                <th scope="col">IMEI</th>
+                <th scope="col">Тип устройства</th>
+                <th scope="col">Тип события</th>
+                <th scope="col">Mqtt message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var signal in Model.Signals)
+            {
+                <tr>
+                    <td>@signal.TS</td>
+                    <td>@signal.Imei</td>
+                    <td>@signal.DS.GetDescription()</td>
+                    <td>@signal.St.GetDescription()</td>
+                    <td>@signal.Source</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

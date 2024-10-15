@@ -1,0 +1,35 @@
+{
+  "name": "imei st template",
+  "mqqtTopicQuery": "+/ST",
+  "mqqtTopicPattern": "^[0-9]{15}/ST$",
+  "properties": [
+    //add TS 
+    {
+      "property": "NET",
+      "inFunc": "JSON.parse(arg1).NET"
+    },
+    {
+      "property": "RSSI",
+      "inFunc": "Number(JSON.parse(arg1).RSSI)"
+    },
+    {
+      "property": "VDD",
+      "inFunc": "Number(JSON.parse(arg1).VDD)",
+      "validateFunc": "value>5000"
+    },
+    {
+      "property": "LAT",
+      "inFunc": "parseFloat(JSON.parse(arg1).LAT.replace(',','.'))"
+    },
+    {
+      "property": "LON",
+      "inFunc": "parseFloat(JSON.parse(arg1).LON.replace(',','.'))"
+    }
+  ],
+  "Source": "{\"TS\":\"231113212238\",\"IMEI\":\"863051060924940\",\"VDD\":\"1111\", \"ST\":\"2\", \"LAT\":\"59.923130\",\"LON\":\"30.245016\", \"ID\":\"00:0a:95:9d:68:16\"}"
+  
+}
+
+
+
+

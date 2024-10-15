@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+      POSTGRES_DB: mqttDb
+    volumes:
+      - database:/var/lib/postgresql/data
+      
+  app:
+    ports:
+      - 8080:80
+    build: .
+    environment:
+      ConnectionStrings__PostgresConnection: "Server=postgres;Port=5432;Database=mqttDb;User ID=test;Password=test;"
+volumes: 
+  database:

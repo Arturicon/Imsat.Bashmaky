@@ -1,0 +1,46 @@
+﻿@page
+@model Imsat.Bashmaky.Web.Pages.SignInModel
+@{
+}
+
+<h2>Sign In</h2>
+<form method='post' id="SignIn">
+    <p>
+        <label>Login</label><br />
+        <input name='login' />
+    </p>
+    <p>
+        <label>Password</label><br />
+        <input type='password' name='password' />
+    </p>
+    <input type='submit' value='Login' />
+</form>
+
+@* <script>
+    document.getElementById('SignIn').addEventListener('submit', function (event) {
+        event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+
+        fetch('/signIn', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+</script> *@

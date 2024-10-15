@@ -1,0 +1,205 @@
+﻿@page "/{id=1}"
+@using Imsat.Bashmaky.Model;
+@using Imsat.Bashmaky.Model.Database.Types;
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+
+
+<div class="container mt-4 segment">
+    <div class="input-group mb-3" name="boxes">
+        <h5 id="titleId">Ящики</h5>
+        <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon03" onclick="saveBoxes()">Сохранить</button>
+    </div>
+    <div class="row">
+        @foreach (var box in Model.Boxes)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="input-group mb-3" name="boxes">
+                            <span name="boxMac" class="input-group-text" id="inputGroup-sizing-lg">@box.Mac</span>
+                            <input name="boxName" type="text" class="form-control" placeholder="Имя ящика" aria-describedby="basic-addon1" value="@box.DeviceName">
+                        </div>
+
+                        <p class="card-text">@box.DS.GetDescription()</p>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @box.PercentageOfFilling%;" aria-valuenow="@box.PercentageOfFilling" aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @box.Bashmaks.Count/@box.MaxBashmaks
+                            </div>
+                        </div>
+                        <br>
+                        <ul class="list-group">
+                            @foreach (var bashmak in @box.Bashmaks)
+                            {
+                                if (@bashmak.St == ST.PutInBox)
+                                {
+                                    <li class="list-group-item list-group-item-success">
+                                        <div name="bashmakItem" class="input-group mb-3">
+                                            <span name="bashmakMac" style="vertical-align: middle">@bashmak.Mac</span>
+                                            <input name="bashmakName" type="text" class="form-control" placeholder="Башмак" aria-describedby="basic-addon1" value="@bashmak.DeviceName"></input>
+                                        </div>
+                                    </li>
+                                }
+                                else if (@bashmak.St == ST.PutOnRail)
+                                {
+                                    <li class="list-group-item list-group-item-danger">
+                                        <div name="bashmakItem" class="input-group mb-3">
+                                            <span name="bashmakMac" style="vertical-align: middle">@bashmak.Mac</span>
+                                            <input name="bashmakName" type="text" class="form-control" placeholder="Башмак" aria-describedby="basic-addon1" value="@bashmak.DeviceName"></input>
+                                        </div>
+                                    </li>
+                                }
+                                else if (@bashmak.St == ST.Raised)
+                                {
+                                    <li class="list-group-item list-group-item-warning">
+                                        <div name="bashmakItem" class="input-group mb-3">
+                                            <span name="bashmakMac" style="vertical-align: middle">@bashmak.Mac</span>
+                                            <input name="bashmakName" type="text" class="form-control" placeholder="Башмак" aria-describedby="basic-addon1" value="@bashmak.DeviceName"></input>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="container segment">
+    <div class="row">
+        <div class="col-7">
+            <h5>Башмаки</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Мак-адрес</th>
+                        <th scope="col">Последняя связь</th>
+                        <th scope="col">Координаты</th>
+                        <th scope="col">Пути</th>
+                        <th scope="col">Связь</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bashmak in Model.Bashmaks)
+                    {
+                        <tr>
+                            <td>@bashmak.Mac</td>
+                            <td>@bashmak.TS</td>
+                            <td>@bashmak.LAT : @bashmak.LON</td>
+                            <td>@bashmak.RailwayStr</td>
+                            <td>@bashmak.Connection.GetDescription()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-5">
+            <h5>Терминалы</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">IMEI</th>
+                        <th scope="col">Последняя связь</th>
+                        <th scope="col">Координаты</th>
+                        <th scope="col">Связь</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var terminal in Model.Terminals)
+                    {
+                        <tr>
+                            <td>@terminal.Imei</td>
+                            <td>@terminal.TS</td>
+                            <td>@terminal.LAT : @terminal.LON</td>
+                            <td>@terminal.Connection.GetDescription()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="segment">
+    <h5>Сигналы</h5>
+    <div class="row">
+        <div class="table-container">
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col">Время</th>
+                        <th scope="col">IMEI</th>
+                        <th scope="col">Тип устройства</th>
+                        <th scope="col">Тип события</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var signal in Model.ShortSignals)
+                    {
+                        <tr>
+                            <td>@signal.TS</td>
+                            <td>@signal.Imei</td>
+                            <td>@signal.DS.GetDescription()</td>
+                            <td>@signal.St.GetDescription()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-cta"><a asp-page="Signals" asp-route-id="@Model.StationId">История сигналов</a></button>
+    </div>
+</div>
+
+
+
+<script>
+
+
+
+    async function saveBoxes() {
+        let boxes = [];
+        $("[name='boxes']").each(function () {
+            let boxMac = $(this).find("[name='boxMac']").text().trim();
+            let boxName = $(this).find("[name='boxName']").val().trim();
+            boxes.push({ mac: boxMac, name: boxName });
+        });
+        const resp = await fetch(`/api/entity/save-boxes`, {
+            method: 'POST',
+            headers:
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(boxes)
+        });
+
+        const saveBashmak = await saveBashmaks();
+        let message = resp.ok && saveBashmak ? "Сохранено" : "Ошибка сохранения";
+        alert(message);
+    }
+    async function saveBashmaks() {
+        let bashmaks = [];
+        $("[name='bashmakItem']").each(function () {
+            let bashmakMac = $(this).find("[name='bashmakMac']").text().trim();
+            let bashmakName = $(this).find("[name='bashmakName']").val().trim();
+            bashmaks.push({ mac: bashmakMac, name: bashmakName });
+        });
+        const resp = await fetch(`/api/entity/save-bashmaks`, {
+            method: 'POST',
+            headers:
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bashmaks)
+        });
+
+        return resp.ok;
+    }
+
+</script>
