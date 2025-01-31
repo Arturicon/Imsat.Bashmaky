@@ -1,0 +1,174 @@
+default:
+  image: docker:24.0.6
+  services:
+    - docker:24.0.6-dind
+  before_script:
+    - docker info
+
+stages:
+  - build
+  - validate
+  - plan
+  - apply
+
+docker-build:
+  stage: build
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^i-bashmaky\/\S*$/
+  services:
+    - docker:dind
+  before_script:
+    - export VERSION="${CI_COMMIT_TAG#i-bashmaky\/}"
+    - export IMAGE_NAME="$CI_REGISTRY_IMAGE/backend:${VERSION}"
+    - echo "$DEPLOY_TOKEN" | docker login $CI_REGISTRY -u a.onikiychuk --password-stdin
+    - echo "$DOCKER_REGISTRY_KEY_YC" | docker login --username json_key --password-stdin cr.yandex
+  script:
+    - docker build --progress=plain --no-cache --pull -t "$IMAGE_NAME" .
+    - docker tag "$IMAGE_NAME" "$CI_REGISTRY_IMAGE_YC:${VERSION}"
+    - docker tag "$IMAGE_NAME" "$CI_REGISTRY/asu/asu-backend/i-bashmaky:${VERSION}"
+    - docker push "$IMAGE_NAME"
+    - docker push "$CI_REGISTRY_IMAGE_YC:${VERSION}"
+    - docker push "$CI_REGISTRY/asu/asu-backend/i-bashmaky:${VERSION}"
+  tags:
+    - docker
+
+validate_job:
+  stage: validate
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^i-bashmaky\/\S*$/
+  script:
+    - terraform validate
+  before_script:
+    - |
+      cd iac
+      cat <<EOF >>~/.terraformrc
+      provider_installation {
+        network_mirror {
+          url = "https://terraform-mirror.yandexcloud.net/"
+          include = ["registry.terraform.io/*/*"]
+        }
+        direct {
+          exclude = ["registry.terraform.io/*/*"]
+        }
+      }
+      EOF
+    - |
+      cat <<EOF >config.s3.tfbackend 
+      access_key="$ACCESS_KEY"
+      secret_key="$SECRET_KEY"
+      EOF
+    - |
+      cat <<EOF >backend.secret.auto.tfvars.json 
+      {
+        "backend_access_key": "$ACCESS_KEY",
+        "backend_secret_key": "$SECRET_KEY"
+      }
+      EOF
+    - echo "$YC_KEY" > key.json
+    - terraform init -backend-config=config.s3.tfbackend
+  image:
+    name: hashicorp/terraform:1.8.2
+    entrypoint:
+      - "/usr/bin/env"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  tags:
+    - docker
+  dependencies:
+    - docker-build
+
+plan_job:
+  stage: plan
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^i-bashmaky\/\S*$/
+  script:
+    - terraform plan -var="app_version=$VERSION" -out="planfile"
+  artifacts:
+    paths:
+      - iac/planfile
+  before_script:
+    - export VERSION="${CI_COMMIT_TAG#i-bashmaky\/}"
+    - |
+      cd iac
+      cat <<EOF >>~/.terraformrc
+      provider_installation {
+        network_mirror {
+          url = "https://terraform-mirror.yandexcloud.net/"
+          include = ["registry.terraform.io/*/*"]
+        }
+        direct {
+          exclude = ["registry.terraform.io/*/*"]
+        }
+      }
+      EOF
+    - |
+      cat <<EOF >config.s3.tfbackend 
+      access_key="$ACCESS_KEY"
+      secret_key="$SECRET_KEY"
+      EOF
+    - |
+      cat <<EOF >backend.secret.auto.tfvars.json 
+      {
+        "backend_access_key": "$ACCESS_KEY",
+        "backend_secret_key": "$SECRET_KEY"
+      }
+      EOF
+    - echo "$YC_KEY" > key.json
+    - terraform init -backend-config=config.s3.tfbackend
+  image:
+    name: hashicorp/terraform:1.8.2
+    entrypoint:
+      - "/usr/bin/env"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  tags:
+    - docker
+  dependencies:
+    - validate_job
+
+apply:
+  stage: apply
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^i-bashmaky\/\S*$/
+  script:
+    - terraform apply -auto-approve "planfile"
+  when: manual
+  before_script:
+    - |
+      cd iac
+      cat <<EOF >>~/.terraformrc
+      provider_installation {
+        network_mirror {
+          url = "https://terraform-mirror.yandexcloud.net/"
+          include = ["registry.terraform.io/*/*"]
+        }
+        direct {
+          exclude = ["registry.terraform.io/*/*"]
+        }
+      }
+      EOF
+    - |
+      cat <<EOF >config.s3.tfbackend 
+      access_key="$ACCESS_KEY"
+      secret_key="$SECRET_KEY"
+      EOF
+    - |
+      cat <<EOF >backend.secret.auto.tfvars.json 
+      {
+        "backend_access_key": "$ACCESS_KEY",
+        "backend_secret_key": "$SECRET_KEY"
+      }
+      EOF
+    - echo "$YC_KEY" > key.json
+    - terraform init -backend-config=config.s3.tfbackend
+  image:
+    name: hashicorp/terraform:1.8.2
+    entrypoint:
+      - "/usr/bin/env"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  tags:
+    - docker
+  dependencies:
+    - plan_job

@@ -1,0 +1,7 @@
+.terraform/
+config.s3.tfbackend
+backend.secret.auto.tfvars.json
+*.pem
+key.json
+plan
+tm.key.json

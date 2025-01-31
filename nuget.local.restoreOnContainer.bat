@@ -1,0 +1,1 @@
+dotnet Imsat.Bashmaky.sln --configfile nuget.local.restore.config
